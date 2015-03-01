@@ -39,6 +39,7 @@ Thumbs.db
 #Specifics #
 ######################
 dist
+.tmp
 node_modules
 bower_components
 tmp
