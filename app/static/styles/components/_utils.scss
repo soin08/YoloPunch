@@ -6,6 +6,10 @@
 
 /*==========  VARIABLES  ==========*/
 
+  //Defining dirs
+  $font_dir: "../fonts/";
+  $image_dir: "../images/";
+
   // Defining breakpoints
   $medium: 620px !default;
   $wide: 800px !default;
@@ -85,8 +89,35 @@
     @return  $context / $size + em;
   }
 
+  @function _simple-font-url($name, $extension) {
+    @return url($font_dir + $name + '-webfont.' + $extension);
+  }
+
+  @function _full-font-url($name, $extension, $format, $hash: '') {
+    @return url($font_dir + '/' + $name + '-webfont.' + $extension + $hash) format($format);
+  }
+
 
 /*==========  MIXINS  ==========*/
+
+  @mixin register-font($name) {
+      @font-face {
+          font-family: $name;
+          font-style: normal;
+          font-weight: normal;
+          src: _simple-font-url($name, 'eot');
+          src: _full-font-url($name, 'woff', 'embedded-opentype', '?#iefix'),
+                 _full-font-url($name, 'ttf', 'truetype'),
+                 _full-font-url($name, 'svg', 'esvg', '?#' + $name);
+      }
+  }
+
+  @mixin use-registered-font($name)
+  {
+      font-family: $name;
+      font-weight: normal;
+      letter-spacing: 0;
+  }
 
   @mixin media-query($media-query) {
     @if $media-query == small {

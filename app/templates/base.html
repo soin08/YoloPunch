@@ -29,7 +29,7 @@
   <body>
     <header class="app-bar promote-layer">
       <div class="app-bar-container">
-        <button class="menu"><img src="images/hamburger.svg" alt="Menu"></button>
+        <button class="menu"><img src="{% static "images/hamburger.svg" %}" alt="Menu"></button>
         <h1 class="logo">Web <strong>Starter Kit</strong></h1>
         <section class="app-bar-actions">
         <!-- Put App Bar Buttons Here -->
@@ -43,19 +43,14 @@
       <ul>
         <li><a href="#hello">Hello</a></li>
         <li><a href="#get-started">Get Started</a></li>
-        <li><a href="styleguide.html">Style Guide</a></li>
+        <li><a href="{% url 'styleguide' %}">Style Guide</a></li>
       </ul>
     </nav>
 
     <main>
-      {% block content %}
-        <h1 id="hello">Hello!</h1>
-        <p>Welcome to Web Starter Kit.</p>
-
-        <h2 id="get-started">Get Started.</h2>
-        <p>Read how to <a href="https://developers.google.com/web/starter-kit">Get Started</a> or check out the <a href="styleguide.html">Style Guide</a>.</p>
+      {% block content %}{% endblock %}
       </main>
-    {% endblock %}
+
     <!-- build:js scripts/main.min.js -->
     <script src="{% static "scripts/main.js" %}"></script>
     <!-- endbuild -->

@@ -1,22 +1,3 @@
-/**
- *
- *  Web Starter Kit
- *  Copyright 2014 Google Inc. All rights reserved.
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License
- *
- */
-
 'use strict';
 
 // Include Gulp & Tools We'll Use
@@ -28,6 +9,7 @@ var browserSync = require('browser-sync');
 var pagespeed = require('psi');
 var reload = browserSync.reload;
 var exec = require('child_process').exec;
+var notifier = require('node-notifier');
 
 var AUTOPREFIXER_BROWSERS = [
   'ie >= 10',
@@ -41,14 +23,59 @@ var AUTOPREFIXER_BROWSERS = [
   'bb >= 10'
 ];
 
+function getRelativePath(absPath) {
+    absPath = absPath.replace(/\\/g, '/');
+    var curDir = __dirname.replace(/\\/g, '/');
+    return absPath.replace(curDir, '');
+}
+
+function logUglifyError(error) {
+    this.emit('end');
+    var file = getRelativePath(error.fileName);
+    $.util.log($.util.colors.bgRed('Uglify Error:'))
+    $.util.log($.util.colors.bgMagenta('file: ') + $.util.colors.inverse(file));
+    $.util.log($.util.colors.bgMagenta('line: '+error.lineNumber));
+    //remove path from error message
+    var message = error.message.substr(error.message.indexOf(' ')+1);
+    $.util.log($.util.colors.bgRed(message));
+    notifier.notify({ title: 'Gulp message', message: 'Uglify error.' });
+}
+
+function logCoffeeError(error) {
+    this.emit('end');
+     var file = getRelativePath(error.filename);
+    $.util.log($.util.colors.bgRed('Coffee Error:'))
+    $.util.log($.util.colors.bgMagenta('file: ') + $.util.colors.inverse(file));
+    $.util.log($.util.colors.bgMagenta('line: '+error.location.first_line+', column: '+error.location.first_column));
+    $.util.log($.util.colors.bgRed(error.name+': '+error.message));
+    $.util.log($.util.colors.bgMagenta('near: ') + $.util.colors.inverse(error.code));
+    notifier.notify({ title: 'Gulp message', message: 'Coffee error.' });
+};
+
+function logSASSError(error) {
+    var file = getRelativePath(error.file);
+    $.util.log($.util.colors.bgRed('Sass Error:'))
+    $.util.log($.util.colors.bgMagenta('file: ') + $.util.colors.inverse(file));
+    $.util.log($.util.colors.bgMagenta('line: '+error.line+', column: '+error.column));
+    $.util.log($.util.colors.bgRed(error.message));
+    notifier.notify({ title: 'Gulp message', message: 'Error!' });
+}
+
 // Lint JavaScript
 gulp.task('jshint', function () {
   return gulp.src('app/static/scripts/**/*.js')
     .pipe(reload({stream: true, once: true}))
     .pipe($.jshint())
-    .pipe($.jshint.reporter('jshint-stylish'))
-    .pipe($.if(!browserSync.active, $.jshint.reporter('fail')));
+    .pipe($.jshint.reporter('jshint-stylish'));
 });
+
+//Lint CoffeeScript
+gulp.task('coffeelint', function() {
+    return gulp.src('app/static/scripts/*.coffee')
+      .pipe(reload({stream: true, once: true}))
+      .pipe($.coffeelint())
+      .pipe($.coffeelint.reporter())
+})
 
 // Optimize Images
 gulp.task('images', function () {
@@ -61,12 +88,14 @@ gulp.task('images', function () {
     .pipe($.size({title: 'images'}));
 });
 
+
 // Copy All Files At The Root Level (app)
 gulp.task('copy', function () {
   return gulp.src([
-    'app/*'//,
-   // '!app/templates/*.html'//,
-    //'node_modules/apache-server-configs/dist/.htaccess'
+    'app/**',
+    '!app/**/__pycache__{,/**}',
+    '!app/templates{,/**}',
+    '!app/static{,/**}'
   ], {
     dot: true
   }).pipe(gulp.dest('dist'))
@@ -92,22 +121,45 @@ gulp.task('styles', function () {
     .pipe($.changed('.tmp/styles', {extension: '.css'}))
     .pipe($.sass({
       precision: 10,
-      onError: console.error.bind(console, 'Sass error:')
+      onError: logSASSError
     }))
     .pipe($.autoprefixer({browsers: AUTOPREFIXER_BROWSERS}))
     .pipe($.sourcemaps.write())
     .pipe(gulp.dest('.tmp/styles'))
     // Concatenate And Minify Styles
     .pipe($.if('*.css', $.csso()))
+    .pipe($.rename({suffix: '.min'}))
     .pipe(gulp.dest('dist/static/styles'))
     .pipe($.size({title: 'styles'}));
 });
+
+
+//Concat and minify scripts
+gulp.task('scripts', function() {
+    return gulp.src([
+          'app/static/scripts/**/*.coffee',
+          'app/static/scripts/**/*.js'
+    ])
+    .pipe($.sourcemaps.init())
+    .pipe($.changed('.tmp/scripts', {extension: '.js'}))
+    .pipe($.if('*.coffee', $.coffee({ bare: true })))
+      .on('error',  logCoffeeError)
+    .pipe($.concat('app.js'))
+    .pipe($.sourcemaps.write())
+    .pipe(gulp.dest('.tmp/scripts'))
+    .pipe($.uglify())
+      .on('error', logUglifyError)
+    .pipe($.rename({suffix: '.min'}))
+    .pipe(gulp.dest('dist/static/scripts'))
+    .pipe($.size({title: 'scripts'}));
+})
+
 
 // Scan Your HTML For Assets & Optimize Them
 gulp.task('html', function () {
   var assets = $.useref.assets({searchPath: '{.tmp,app}'});
 
-  return gulp.src('app/**/*.html')
+  return gulp.src('app/templates/**/*.html')
     .pipe(assets)
     // Concatenate And Minify JavaScript
     .pipe($.if('*.js', $.uglify({preserveComments: 'some'})))
@@ -116,8 +168,7 @@ gulp.task('html', function () {
     // the next line to only include styles your project uses.
     .pipe($.if('*.css', $.uncss({
       html: [
-        'app/templates/**/*.html'//,
-        //'app/styleguide.html'
+        'app/templates/**/*.html'
       ],
       // CSS Selectors for UnCSS to ignore
       ignore: [
@@ -135,7 +186,7 @@ gulp.task('html', function () {
     // Minify Any HTML
     .pipe($.if('*.html', $.minifyHtml()))
     // Output Files
-    .pipe(gulp.dest('dist'))
+    .pipe(gulp.dest('dist/templates'))
     .pipe($.size({title: 'html'}));
 });
 
@@ -144,52 +195,54 @@ gulp.task('clean', del.bind(null, ['.tmp', 'dist/*', '!dist/.git'], {dot: true})
 
 //Activate virtualenv and run Django server
 gulp.task('runserver', function() {
+    var isWin = /^win/.test(process.platform);
      var cmd =  '. ../bin/activate';
 
-    if (fs.existsSync('../Scripts')) { //for Windows
+    if (isWin) { //for Windows
         cmd = '..\\Scripts\\activate';
     }
 
-    var proc = exec(cmd+' && python manage.py runserver');
+    var proc = exec(cmd+' && python app/manage.py runserver');
 });
 
+gulp.task('runserver:dist', function() {
+    var isWin = /^win/.test(process.platform);
+     var cmd =  '. ../bin/activate';
+
+    if (isWin) { //for Windows
+        cmd = '..\\Scripts\\activate';
+    }
+
+    var proc = exec(cmd+' && python dist/manage.py runserver');
+});
+
+
 // Watch Files For Changes & Reload
-gulp.task('serve', ['styles', 'runserver'], function () {
+gulp.task('serve', ['styles', 'jshint', 'coffeelint', 'scripts', 'runserver'], function () {
   browserSync({
     notify: false,
-    // Customize the BrowserSync console logging prefix
-    //logPrefix: 'WSK',
-    // Run as an https by uncommenting 'https: true'
-    // Note: this uses an unsigned certificate which on first access
-    //       will present a certificate warning in the browser.
-    // https: true,
-    //server: ['.tmp', 'app']
     proxy: "127.0.0.1:8000"
   });
 
   gulp.watch(['app/**/*.html'], reload);
   gulp.watch(['app/static/styles/**/*.{scss,css}'], ['styles', reload]);
   gulp.watch(['app/static/scripts/**/*.js'], ['jshint']);
+  gulp.watch(['app/static/scripts/**/*.coffee'], ['coffeelint']);
+  gulp.watch(['app/static/scripts/**/*.{js,coffee}'], ['scripts', reload]);
   gulp.watch(['app/static/images/**/*'], reload);
 });
 
 // Build and serve the output from the dist build
-gulp.task('serve:dist', ['default'], function () {
+gulp.task('serve:dist', ['default', 'runserver:dist'], function () {
   browserSync({
     notify: false,
-    //logPrefix: 'WSK',
-    // Run as an https by uncommenting 'https: true'
-    // Note: this uses an unsigned certificate which on first access
-    //       will present a certificate warning in the browser.
-    // https: true,
-    //server: 'dist'
     proxy: "127.0.0.1:8000"
   });
 });
 
 // Build Production Files, the Default Task
 gulp.task('default', ['clean'], function (cb) {
-  runSequence('styles', ['jshint', 'html', 'images', 'fonts', 'copy'], cb);
+  runSequence('styles', ['jshint', 'coffeelint', 'scripts', 'html', 'images', 'fonts', 'copy'], cb);
 });
 
 // Run PageSpeed Insights

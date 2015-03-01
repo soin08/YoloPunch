@@ -8,6 +8,5 @@ urlpatterns = patterns('',
     # url(r'^$', 'yolopunch.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
     url( r'^$', views.index, name='index'),
-    url(r'^styleguide$', views.styleguide, name='styleguide'),
     url(r'^admin/', include(admin.site.urls)),
 )
