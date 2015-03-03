@@ -118,7 +118,7 @@ gulp.task('styles', function () {
     'app/static/styles/components/components.scss'
   ])
     .pipe($.sourcemaps.init())
-    .pipe($.changed('.tmp/styles', {extension: '.css'}))
+    //.pipe($.changed('.tmp/styles', {extension: '.css'}))
     .pipe($.sass({
       precision: 10,
       onError: logSASSError
