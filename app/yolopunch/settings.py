@@ -12,9 +12,7 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
-APP_ROOT = BASE_DIR
-for i in range(1):
-    APP_ROOT = os.path.abspath(os.path.join(APP_ROOT, os.pardir))
+APP_ROOT = os.path.abspath(os.path.join(BASE_DIR, os.pardir))
 
 print(os.path.join(APP_ROOT, ".tmp"))
 #print(os.path.abspath(os.path.dirname(os.path.dirname(BASE_DIR))))

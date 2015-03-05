@@ -28,6 +28,9 @@
   </head>
   <body>
     <header class="app-bar promote-layer">
+      {% block header %}
+
+      {% endblock header %}
       <div class="app-bar-container">
         <button class="menu"><img src="{% static "images/hamburger.svg" %}" alt="Menu"></button>
         <h1 class="logo">Web <strong>Starter Kit</strong></h1>
@@ -48,10 +51,14 @@
     </nav>
 
     <main>
-      {% block content %}{% endblock %}
-      </main>
+    {% block content %}{% endblock %}
+    </main>
+    <footer>
+      {% block footer %}
 
-    <!-- build:js scripts/main.min.js -->
+      {% endblock footer %}
+    </footer>
+    <!-- build:js scripts/app.min.js -->
     <script src="{% static "scripts/main.js" %}"></script>
     <!-- endbuild -->
     <!-- Google Analytics: change UA-XXXXX-X to be your site's ID -->
