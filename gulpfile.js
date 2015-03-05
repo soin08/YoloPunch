@@ -38,7 +38,7 @@ function logUglifyError(error) {
     //remove path from error message
     var message = error.message.substr(error.message.indexOf(' ')+1);
     $.util.log($.util.colors.bgRed(message));
-    notifier.notify({ title: 'Gulp message', message: 'Uglify error.' });
+    notifier.notify({ title: 'Gulp message', message: 'Uglify error!' });
 }
 
 function logCoffeeError(error) {
@@ -49,7 +49,7 @@ function logCoffeeError(error) {
     $.util.log($.util.colors.bgMagenta('line: '+error.location.first_line+', column: '+error.location.first_column));
     $.util.log($.util.colors.bgRed(error.name+': '+error.message));
     $.util.log($.util.colors.bgMagenta('near: ') + $.util.colors.inverse(error.code));
-    notifier.notify({ title: 'Gulp message', message: 'Coffee error.' });
+    notifier.notify({ title: 'Gulp message', message: 'Coffee error!' });
 };
 
 function logSASSError(error) {
@@ -58,7 +58,7 @@ function logSASSError(error) {
     $.util.log($.util.colors.bgMagenta('file: ') + $.util.colors.inverse(file));
     $.util.log($.util.colors.bgMagenta('line: '+error.line+', column: '+error.column));
     $.util.log($.util.colors.bgRed(error.message));
-    notifier.notify({ title: 'Gulp message', message: 'Error!' });
+    notifier.notify({ title: 'Gulp message', message: 'SASS Error!' });
 }
 
 // Lint JavaScript
