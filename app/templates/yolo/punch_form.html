@@ -1,0 +1,6 @@
+<form action="{% url 'punches' 'soin08' %}" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button>attach...</button>
+    <button type="submit">publish</button>
+</form>

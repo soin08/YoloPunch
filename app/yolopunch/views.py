@@ -3,18 +3,17 @@ from django.contrib.auth import authenticate, login
 from django.forms import ValidationError
 from django.utils.translation import ugettext as _
 
-from django import forms
+from yolopunch import forms
 
-class LoginForm(forms.Form):
-    username = forms.CharField(label='username', min_length=3, max_length=20)
-    password = forms.CharField(label='password', min_length=6, widget=forms.PasswordInput())
 
 def home(request):
-    return render(request, 'yolopunch/index.html')
+    punch_form = forms.PunchForm()
+    print(punch_form)
+    return render(request, 'yolo/index.html', {'punch_form' : punch_form})
 
 def login(request):
     if request.method == 'POST':
-        form = LoginForm(request.POST)
+        form = forms.LoginForm(request.POST)
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
@@ -34,7 +33,7 @@ def login(request):
 
     else:
         form = LoginForm()
-    return render(request, 'yolopunch/login.html', {'form' : form})
+    return render(request, 'yolo/login.html', {'form' : form})
 
 def logout(request):
     pass
@@ -56,4 +55,4 @@ def punches(request):
 
 
 def styleguide(request):
-    return render(request, 'yolopunch/styleguide.html')
+    return render(request, 'yolo/styleguide.html')
