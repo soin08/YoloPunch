@@ -14,7 +14,7 @@ urlpatterns = patterns('',
     url(r'^(?P<username>[a-z0-9.-_]{3,20})/$', views.user, name='user'),
     url(r'^(?P<username>[a-z0-9.-_]{3,20})/punches/$',
          views.punches, name='challanges'),
-    url(r'^(?P<username>[a-z0-9.-_]{3,20}{3, 20})/punches/(?P<filter>[created|completed])/$',
+    url(r'^(?P<username>[a-z0-9.-_]{3,20})/punches/(?P<filter>[created|completed])/$',
          views.punches, name='challanges'),
     url(r'^styleguide$', views.styleguide, name='styleguide'),
 

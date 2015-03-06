@@ -7,9 +7,8 @@ from yolo import forms
 
 
 def home(request):
-    punch_form = forms.PunchForm()
-    print(punch_form)
-    return render(request, 'yolo/index.html', {'punch_form' : punch_form})
+    challange_form = forms.ChallangeForm()
+    return render(request, 'yolo/index.html', {'challange_form' : challange_form})
 
 def login(request):
     if request.method == 'POST':
@@ -32,7 +31,7 @@ def login(request):
                 ))
 
     else:
-        form = LoginForm()
+        form = forms.LoginForm()
     return render(request, 'yolo/login.html', {'form' : form})
 
 def logout(request):
