@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate, login
 from django.forms import ValidationError
 from django.utils.translation import ugettext as _
 
-from yolopunch import forms
+from yolo import forms
 
 
 def home(request):

@@ -43,6 +43,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'yolo',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -55,9 +56,9 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'yolopunch.urls'
+ROOT_URLCONF = 'urls'
 
-WSGI_APPLICATION = 'yolopunch.wsgi.application'
+WSGI_APPLICATION = 'wsgi.application'
 
 
 # Database

@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 
-from yolopunch import views
+from yolo import views
 
 urlpatterns = patterns('',
     url(r'^$', views.home, name='home'),
@@ -13,9 +13,9 @@ urlpatterns = patterns('',
     url(r'^top/(?P<filter>[users|punches])/$', views.top, name='top'),
     url(r'^(?P<username>[a-z0-9.-_]{3,20})/$', views.user, name='user'),
     url(r'^(?P<username>[a-z0-9.-_]{3,20})/punches/$',
-         views.punches, name='punches'),
+         views.punches, name='challanges'),
     url(r'^(?P<username>[a-z0-9.-_]{3,20}{3, 20})/punches/(?P<filter>[created|completed])/$',
-         views.punches, name='punches'),
+         views.punches, name='challanges'),
     url(r'^styleguide$', views.styleguide, name='styleguide'),
 
     # Examples:
