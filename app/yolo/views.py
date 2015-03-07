@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import authenticate, login
 from django.forms import ValidationError
 from django.utils.translation import ugettext as _
@@ -12,8 +12,8 @@ def home(request):
 
 def login(request):
     if request.method == 'POST':
-        form = forms.LoginForm(request.POST)
-        if form.is_valid():
+        login_form = forms.LoginForm(request.POST)
+        if login_form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
             user = authenticate(username=username, password=password)
@@ -25,20 +25,37 @@ def login(request):
                     pass
                     #return render(request, 'yolopunch/login.html', {'form': form})
             else:
-                form.add_error(None, ValidationError(
+                login_form.add_error(None, ValidationError(
                     _('Invalid username or password'),
                     code='login_error',
                 ))
 
     else:
-        form = forms.LoginForm()
-    return render(request, 'yolo/login.html', {'form' : form})
+        login_form = forms.LoginForm()
+    return render(request, 'yolo/login.html', {'form' : login_form})
 
 def logout(request):
     pass
 
-def registration(request):
+def register(request):
+    if request.user.is_authenticated():
+        return redirect('/' + request.user.username + '/')
+
+        if request.method == 'POST':
+            register_form = forms.RegisterForm(request.POST)
+            if register_form.is_valid():
+                #email confirmation mechanism here
+                pass
+        else:
+            register_form = forms.RegisterForm()
+        return render(request, 'yolo/register.html', {'form' : register_form})
+
+def following(request):
     pass
+
+def followers(request):
+    pass
+
 
 def search(request):
     pass

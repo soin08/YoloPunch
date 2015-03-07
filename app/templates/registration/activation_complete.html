@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Your account has been activated!</h1>
+    <p>Now you will be redirected to the login page.</p>
+    <p>No redirect? <strong><a href="{% url 'auth_login' %}">Log in</a>!</strong></p>
+{% endblock content %}

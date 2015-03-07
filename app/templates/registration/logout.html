@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Sad to see you go!</h1>
+    <p>You are now logged out. <a href="{% url 'auth_login' %}">Log in</a> back
+    when you are ready for the next challange!</p>
+{% endblock content %}

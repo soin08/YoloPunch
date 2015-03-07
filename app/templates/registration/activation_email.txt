@@ -1,0 +1,3 @@
+Hello, {{user}}
+Glad to see you joining Yolopunch!
+To activate your profile, copy and paste this link to your browser address bar:
