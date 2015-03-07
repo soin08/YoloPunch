@@ -71,7 +71,7 @@ gulp.task('jshint', function () {
 
 //Lint CoffeeScript
 gulp.task('coffeelint', function() {
-    return gulp.src('app/static/scripts/*.coffee')
+    return gulp.src('app/static/scripts/**/*.coffee')
       .pipe(reload({stream: true, once: true}))
       .pipe($.coffeelint())
       .pipe($.coffeelint.reporter())
@@ -94,8 +94,8 @@ gulp.task('copy', function () {
   return gulp.src([
     'app/**',
     '!app/**/__pycache__{,/**}',
-    '!app/templates{,/**}',
-    '!app/static{,/**}'
+    '!app/templates{,/**/*.html}',
+    '!app/static{/fonts/**,/images/**,/scripts/**,/styles/**}'
   ], {
     dot: true
   }).pipe(gulp.dest('dist'))
@@ -112,11 +112,11 @@ gulp.task('fonts', function () {
 // Compile and Automatically Prefix Stylesheets
 gulp.task('styles', function () {
   // For best performance, don't add Sass partials to `gulp.src`
-  return gulp.src([
-    'app/static/styles/*.scss',
-    'app/static/styles/**/*.css',
-    'app/static/styles/components/components.scss'
-  ])
+    return gulp.src([
+      'app/static/styles/*.scss',
+      'app/static/styles/**/*.css',
+      'app/static/styles/components/components.scss'
+    ])
     .pipe($.sourcemaps.init())
     //.pipe($.changed('.tmp/styles', {extension: '.css'}))
     .pipe($.sass({
@@ -217,8 +217,23 @@ gulp.task('runserver:dist', function() {
 });
 
 
-// Watch Files For Changes & Reload
-gulp.task('serve', ['styles', 'jshint', 'coffeelint', 'scripts', 'runserver'], function () {
+// Build and serve the output from the dist build
+gulp.task('serve:dist', ['build', 'runserver:dist'], function () {
+  browserSync({
+    notify: false,
+    proxy: "127.0.0.1:8000"
+  });
+});
+
+
+// Build Production Files
+gulp.task('build', ['clean'], function (cb) {
+  runSequence('styles', ['jshint', 'coffeelint', 'scripts', 'html', 'images', 'fonts', 'copy'], cb);
+});
+
+
+// Watch Files For Changes & Reload, the default task
+gulp.task('default', ['styles', 'jshint', 'coffeelint', 'scripts', 'runserver'], function () {
   browserSync({
     notify: false,
     proxy: "127.0.0.1:8000"
@@ -232,18 +247,6 @@ gulp.task('serve', ['styles', 'jshint', 'coffeelint', 'scripts', 'runserver'], f
   gulp.watch(['app/static/images/**/*'], reload);
 });
 
-// Build and serve the output from the dist build
-gulp.task('serve:dist', ['default', 'runserver:dist'], function () {
-  browserSync({
-    notify: false,
-    proxy: "127.0.0.1:8000"
-  });
-});
-
-// Build Production Files, the Default Task
-gulp.task('default', ['clean'], function (cb) {
-  runSequence('styles', ['jshint', 'coffeelint', 'scripts', 'html', 'images', 'fonts', 'copy'], cb);
-});
 
 // Run PageSpeed Insights
 gulp.task('pagespeed', function (cb) {
