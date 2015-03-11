@@ -4,21 +4,21 @@ from django.contrib.auth.models import User
 
 from django.db.models.signals import post_save
 
-from yolo import validators as v
-
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User, unique=True)
     points = models.IntegerField(default=5) #let's give 5 points for registration!
-    followers = models.ManyToManyField("self", blank=True, null=True)
+    followers = models.ManyToManyField('self', blank=True, null=True)
+    twitter = models.URLField(null=True, blank=True, default='')
+    facebook = models.URLField(null=True, blank=True, default='')
 
-
+User.profile = property(lambda u: UserProfile.objects.get_or_create(user=u)[0])
  # This function will create a UserProfile whenever a User is created
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         profile, created = UserProfile.objects.get_or_create(user=instance)
 
-post_save.connect(create_user_profile, sender=User)
+#post_save.connect(create_user_profile, sender=User)
 
 
 
