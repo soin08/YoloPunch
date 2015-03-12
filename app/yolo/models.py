@@ -4,8 +4,6 @@ from django.contrib.auth.models import User
 
 from django.db.models.signals import post_save
 
-from yolo import validators as v
-
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
@@ -22,10 +20,10 @@ post_save.connect(create_user_profile, sender=User)
 
 
 
-class YoloChallenge(models.Model):
-    title = models.CharField(max_length=100)# This function will create a UserProfile whenever a User is created
+class Challenge(models.Model):
+    title = models.CharField(max_length=100)#
     description = models.CharField(max_length=500)
-    creator = models.OneToOneField(UserProfile, related_name='creator')
+    creator = models.OneToOneField(UserProfile, related_name='challanges')
     recipients = models.ManyToManyField(UserProfile)
     pub_date = models.DateTimeField(auto_now_add=True)
     exp_date = models.DateTimeField()
