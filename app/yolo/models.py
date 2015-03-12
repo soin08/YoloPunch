@@ -6,9 +6,13 @@ from django.db.models.signals import post_save
 
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User, unique=True)
     points = models.IntegerField(default=5) #let's give 5 points for registration!
     followers = models.ManyToManyField("self", blank=True, null=True)
+    twitter = models.URLField(null=True, blank=True, default='')
+    facebook = models.URLField(null=True, blank=True, default='')
+
+User.profile = property(lambda u: UserProfile.objects.get_or_create(user=u)[0])
 
 
  # This function will create a UserProfile whenever a User is created
