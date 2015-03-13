@@ -1,7 +1,9 @@
+from django.contrib.auth.models import User
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import authenticate, login
 from django.forms import ValidationError
 from django.utils.translation import ugettext as _
+from yolo.models import Challenge
 
 from yolo import forms
 
@@ -10,64 +12,53 @@ def home(request):
     challange_form = forms.ChallangeForm()
     return render(request, 'yolo/index.html', {'challange_form' : challange_form})
 
-def login(request):
-    if request.method == 'POST':
-        login_form = forms.LoginForm(request.POST)
-        if login_form.is_valid():
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
-            user = authenticate(username=username, password=password)
-            if user is not None:
-                if user.is_active:
-                    login(request, user)
-                    #redirect
-                else:
-                    pass
-                    #return render(request, 'yolopunch/login.html', {'form': form})
-            else:
-                login_form.add_error(None, ValidationError(
-                    _('Invalid username or password'),
-                    code='login_error',
-                ))
+def top_users(request):
+    return render(request, 'yolo/top.html', {'action_name': 'users'})
 
-    else:
-        login_form = forms.LoginForm()
-    return render(request, 'yolo/login.html', {'form' : login_form})
+def following(request, username):
+    user = get_object_or_404(User, username=username)
+    #get following list and pass in to the template
+    return render(request, 'yolo/following_followers.html', {'user': user, 'action_name': 'following'})
 
-def logout(request):
-    pass
-
-def register(request):
-    if request.user.is_authenticated():
-        return redirect('/' + request.user.username + '/')
-
-        if request.method == 'POST':
-            register_form = forms.RegisterForm(request.POST)
-            if register_form.is_valid():
-                #email confirmation mechanism here
-                pass
-        else:
-            register_form = forms.RegisterForm()
-        return render(request, 'yolo/register.html', {'form' : register_form})
-
-def following(request):
-    pass
-
-def followers(request):
-    pass
+def followers(request, username):
+    user = get_object_or_404(User, username=username)
+    #get followers list and pass in to the template
+    return render(request, 'yolo/following_followers.html', {'user': user, 'action_name': 'followers'})
 
 
 def search(request):
-    pass
+    return render(request, 'yolo/search.html')
 
-def top(request):
-    pass
+def top_all(request):
+    return render(request, 'yolo/top.html', {'action_name': 'all'})
 
-def user(request):
-    pass
+def top_users(request):
+    return render(request, 'yolo/top.html', {'action_name': 'users'})
 
-def punches(request):
-    pass
+def top_challenges(request):
+    return render(request, 'yolo/top.html', {'action_name': 'punches'})
+
+def user(request, username):
+    user = get_object_or_404(User, username=username)
+    return render(request, 'yolo/user.html', {'user': user})
+
+def challanges_all(request, username):
+    #show both created and completed challanges
+    #challanges =
+    user = get_object_or_404(User, username=username)
+    return render(request, 'yolo/challenges.html', {'user': user, 'action_name':'all'})
+
+def challanges_created(request, username):
+    #show created challanges
+    #challanges =
+    user = get_object_or_404(User, username=username)
+    return render(request, 'yolo/challenges.html', {'user': user, 'action_name':'created'})
+
+def challanges_completed(request, username):
+    #show created challanges
+    #challanges =
+    user = get_object_or_404(User, username=username)
+    return render(request, 'yolo/challenges.html', {'user': user, 'action_name':'completed'})
 
 
 def styleguide(request):

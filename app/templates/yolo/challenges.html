@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {{ user.get_full_name }}'s punches: {{ action_name }}
+{% endblock title %}
+
+{% block content %}
+    <h1>{{user.get_full_name}}</h1>
+    <h1>Punches: {{ action_name }}</h1>
+{% endblock content %}

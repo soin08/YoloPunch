@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {{ action_name }}
+{% endblock title %}
+
+{% block content %}
+    <h1> {{ user.get_full_name }}'s {{ action_name }} page</h1>
+{% endblock content %}

@@ -1,4 +1,4 @@
-<form action="{% url 'yolo:challanges' 'soin08' %}" method="post">
+<form action="{% url 'yolo:challenges_all' 'demouser' %}" method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <button>attach...</button>

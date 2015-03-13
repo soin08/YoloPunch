@@ -6,7 +6,5 @@ urlpatterns = patterns('',
     url('^accounts/', include('registration.backends.default.urls')),
     url('^accounts/', include('registration.auth_urls')),
     url('^', include('yolo.urls', namespace='yolo')),
-
-
-    #url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', include(admin.site.urls)),
 )
