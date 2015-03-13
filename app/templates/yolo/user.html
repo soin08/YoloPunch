@@ -5,5 +5,8 @@
 {% endblock title %}
 
 {% block content %}
-    <h1>{{ user.get_full_name}}'s profile
+    <h1>{{ user.get_full_name}}'s profile</h1>
+    <a href="{% url 'yolo:user_following' user.get_username %}"><button>following</button></a>
+    <a href="{% url 'yolo:user_followers' user.get_username %}"><button>followers</button></a>
+    <a href="{% url 'yolo:user_challenges_all' user.get_username %}"><button>punches</button></a>
 {% endblock content %}

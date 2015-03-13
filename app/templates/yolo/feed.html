@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+
+{% block title %}YoloPunch{% endblock title %}
+
+{% block content %}
+    <h2>{{ user.get_full_name }} (<a href="{% url 'auth_logout' %}">Logout</a>)</h2>
+    {% include "yolo/challenge_form.html" with form=challenge_form only %}
+{% endblock content %}

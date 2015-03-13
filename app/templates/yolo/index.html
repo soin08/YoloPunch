@@ -1,6 +1,17 @@
 {% extends "base.html" %}
-{% block title %}Web Starter Kit{% endblock title %}
+{% block title %}YoloPunch{% endblock title %}
 
 {% block content %}
-    {% include "yolo/challenge_form.html" with form=challange_form only %}
+    <h1>Welcome to YoloPunch!</h1>
+    <p>YoloPunch is a social platform for challenges of any kind</p>
+    <h2>With YoloPunch you can:</h2>
+    <ul>
+        <li>blabla</li>
+        <li>blabla</li>
+        <li>blablabla</li>
+    </ul>
+    <h1>Ready to send and accept challenges?</h1>
+    <h2><a href="{% url 'auth_login' %}">Login!</a></h2>
+
+
 {% endblock content %}

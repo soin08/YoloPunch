@@ -41,9 +41,11 @@
     <nav class="navdrawer-container promote-layer">
       <h4>Navigation</h4>
       <ul>
-        <li><a href="#hello">username</a></li>
-        <li><a href="#get-started">following</a></li>
-        <li><a href="#get-started">followers</a></li>
+        <li><a href="/">home</a></li>
+        <li><a href="{% url 'yolo:top_all' %}">top</a></li>
+        <li><a href="{% url 'yolo:user' 'demouser' %}">demouser</a></li>
+        <li><a href="{% url 'auth_login' %}">login</a></li>
+        <li><a href="{% url 'registration_register' %}">register</a></li>
         <li><a href="{% url 'yolo:styleguide' %}">styleguide</a></li>
       </ul>
     </nav>
@@ -53,7 +55,7 @@
     </main>
     <footer>
       {% block footer %}
-          <div class="articles-section">
+          <!--<div class="articles-section">
             <h2 class="editorial-header__subtitle">All links</h2>
             <ul>
               <li><a href="{% url 'yolo:styleguide' %}">styleguide</a></li>
@@ -61,15 +63,15 @@
               <li><a href="{% url 'auth_logout' %}">logout</a></li>
               <li><a href="{% url 'auth_password_change' %}">change password</a></li>
               <li><a href="{% url 'auth_password_change_done' %}">change password done</a></li>
-              <!--<li><a href="{% url 'auth_password_reset' %}">password reset</a></li>
+              <li><a href="{% url 'auth_password_reset' %}">password reset</a></li>
               <li><a href="{% url 'auth_password_reset_done' %}">password reset done</a></li>
-              <li><a href="{% url 'auth_password_reset_complete' %}">password reset complete</a></li> -->
+              <li><a href="{% url 'auth_password_reset_complete' %}">password reset complete</a></li>
               <li><a href="{% url 'registration_register' %}">register</a></li>
               <li><a href="{% url 'registration_activation_complete' %}">activation complete</a></li>
               <li><a href="{% url 'registration_complete' %}">registration complete</a></li>
               <li><a href="{% url 'registration_disallowed' %}">registration disallowed</a></li>
             </ul>
-          </div>
+          </div> -->
 
       {% endblock footer %}
     </footer>

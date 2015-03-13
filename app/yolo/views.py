@@ -9,8 +9,11 @@ from yolo import forms
 
 
 def home(request):
-    challange_form = forms.ChallangeForm()
-    return render(request, 'yolo/index.html', {'challange_form' : challange_form})
+    if request.user.is_authenticated():
+        challenge_form = forms.ChallengeForm()
+        return render(request, 'yolo/feed.html', {'user': request.user, 'challenge_form' : challenge_form})
+    else:
+        return render(request, 'yolo/index.html')
 
 def top_users(request):
     return render(request, 'yolo/top.html', {'action_name': 'users'})

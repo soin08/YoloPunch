@@ -6,4 +6,7 @@
 
 {% block content %}
     <h1>Top page: {{action_name}}</h1>
+    <a href="{% url 'yolo:top_all' %}"><button>all</button></a>
+    <a href="{% url 'yolo:top_users' %}"><button>users</button></a>
+    <a href="{% url 'yolo:top_challenges' %}"><button>punches</button></a>
 {% endblock content %}

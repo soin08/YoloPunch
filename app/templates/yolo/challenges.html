@@ -7,4 +7,13 @@
 {% block content %}
     <h1>{{user.get_full_name}}</h1>
     <h1>Punches: {{ action_name }}</h1>
+     <a href="{% url 'yolo:user_challenges_all' user.get_username %}">
+        <button>all</button>
+     </a>
+     <a href="{% url 'yolo:user_challenges_created' user.get_username %}">
+        <button>created</button>
+     </a>
+<a href="{% url 'yolo:user_challenges_completed' user.get_username %}">
+        <button>completed</button>
+     </a>
 {% endblock content %}
