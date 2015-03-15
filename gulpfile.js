@@ -138,7 +138,7 @@ gulp.task('styles', function () {
 gulp.task('scripts', function() {
     return gulp.src([
           'app/static/scripts/**/*.coffee',
-          'app/static/scripts/**/*.js'
+          'app/static/scripts/**/*.js',
           '!app/static/scripts/bower_components{,/**/*}'
     ])
     .pipe($.sourcemaps.init())
