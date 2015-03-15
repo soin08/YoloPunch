@@ -3,9 +3,9 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import authenticate, login
 from django.forms import ValidationError
 from django.utils.translation import ugettext as _
-from yolo.models import Challenge
+from .models import Challenge
 
-from yolo import forms
+from . import forms
 
 
 def home(request):

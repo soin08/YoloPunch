@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
 
-from yolo.models import UserProfile
+from .models import UserProfile
 
 
 class RegistrationTestCase(TestCase):
