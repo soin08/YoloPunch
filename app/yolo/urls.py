@@ -1,24 +1,43 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 
+from .api import UserViewSet, ChallengeViewSet, UserChallengeViewSet
+
+from rest_framework.routers import DefaultRouter
+
 from . import views
 
+router = DefaultRouter()
+router.register(r'users', UserViewSet)
+router.register(r'punches', ChallengeViewSet)
+router.register(r'userchallenge', UserChallengeViewSet,
+                      base_name='userchallenge')
+
+
 urlpatterns = patterns('',
+    #REST API
+    url(r'^api/', include(router.urls)),
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    #url(r'^users', include(user_urls)),
+    #url(r'^punches', include(challenge_urls)),
+    #url(r'^photos', include(photo_urls)),
+    #Basic YoloPunch functionality
     url(r'^$', views.home, name='home'),
     url(r'^search/$', views.search, name='search'),
     url(r'^top/$', views.top_all, name='top_all' ),
     url(r'^top/users/$', views.top_users, name='top_users'),
     url(r'^top/punches/$', views.top_challenges, name='top_challenges'),
-    url(r'^(?P<username>[a-z0-9.-_]{1,30})/following/$', views.following, name='user_following'),
-    url(r'^(?P<username>[a-z0-9.-_]{1,30})/followers/$', views.followers, name='user_followers'),
-    url(r'^(?P<username>[a-z0-9.-_]{1,30})/punches/$',
+    url(r'^(?P<username>[a-z0-9.-_]+)/following/$', views.following, name='user_following'),
+    url(r'^(?P<username>[a-z0-9.-_]+)/followers/$', views.followers, name='user_followers'),
+    url(r'^(?P<username>[a-z0-9.-_]+)/punches/$',
          views.challanges_all, name='user_challenges_all'),
-    url(r'^(?P<username>[a-z0-9.-_]{1,30})/punches/created/$',
+    url(r'^(?P<username>[a-z0-9.-_]+)/punches/created/$',
          views.challanges_created, name='user_challenges_created'),
-    url(r'^(?P<username>[a-z0-9.-_]{1,30})/punches/completed/$',
+    url(r'^(?P<username>[a-z0-9.-_]+)/punches/completed/$',
          views.challanges_completed, name='user_challenges_completed'),
-    url(r'^(?P<username>[a-z0-9.-_]{1,30})/$', views.user, name='user'),
+    url(r'^(?P<username>[a-z0-9.-_]+)/$', views.user, name='user'),
     url(r'^styleguide$', views.styleguide, name='styleguide'),
+
 
     # Examples:
     # url(r'^$', 'yolopunch.views.home', name='home'),

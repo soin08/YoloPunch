@@ -1,78 +1,56 @@
 from django.contrib.auth.models import User
 
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, viewsets
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework.reverse import reverse
 
 
-from .serializers import UserSerializer, ChallengeSerializer#, PhotoSerializer
+from .serializers import UserSerializer, ChallengeSerializer, PhotoSerializer
 from .models import Challenge, Photo
-from .permissions import PostAuthorCanEditPermission
+from .permissions import IsAuthorOrReadOnly
 
 
-class UserList(generics.ListAPIView):
-    model = User
+class UserViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [
-        permissions.AllowAny
-    ]
+    #permission_classes = (permissions.Is, )
 
 
-class UserDetail(generics.RetrieveAPIView):
-    model = User
-    serializer_class = UserSerializer
-    lookup_field = 'username'
 
-
-class ChallengeMixin(object):
-    model = Challenge
+class ChallengeViewSet(viewsets.ModelViewSet):
+    queryset = Challenge.objects.all()
     serializer_class = ChallengeSerializer
-    permission_classes = [
-        PostAuthorCanEditPermission
-    ]
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
+                                      #IsAuthorOrReadOnly,
+                                      )
 
-    def pre_save(self, obj):
-        """Force author to the current user on save"""
-        obj.author = self.request.user
-        return super(ChallengeMixin, self).pre_save(obj)
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
 
 
-class ChallengeList(ChallengeMixin, generics.ListCreateAPIView):
-    pass
 
-
-class ChallengeDetail(ChallengeMixin, generics.RetrieveUpdateDestroyAPIView):
-    pass
-
-
-class UserChallengeList(generics.ListAPIView):
-    model = Challenge
+class UserChallengeViewSet(viewsets.ModelViewSet):
+    #queryset = Challenge.objects.all()
     serializer_class = ChallengeSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
+                                      IsAuthorOrReadOnly, )
 
     def get_queryset(self):
-        queryset = super(UserChallengeList, self).get_queryset()
+        queryset = super(UserChallengeViewSet, self).get_queryset()
         return queryset.filter(author__username=self.kwargs.get('username'))
 
 
-class PhotoList(generics.ListCreateAPIView):
-    model = Photo
+class PhotoViewSet(viewsets.ModelViewSet):
+    queryset = Photo.objects.all()
     serializer_class = PhotoSerializer
-    permission_classes = [
-        permissions.AllowAny
-    ]
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly, )
 
 
-class PhotoDetail(generics.RetrieveUpdateDestroyAPIView):
-    model = Photo
-    serializer_class = PhotoSerializer
-    permission_classes = [
-        permissions.AllowAny
-    ]
-
-
-class PostPhotoList(generics.ListAPIView):
-    model = Photo
+class ChallengePhotoViewSet(viewsets.ModelViewSet):
     serializer_class = PhotoSerializer
 
     def get_queryset(self):
-        queryset = super(PostPhotoList, self).get_queryset()
-        return queryset.filter(post__pk=self.kwargs.get('pk'))
-
+        queryset = super(ChallengePhotoViewSet, self).get_queryset()
+        return queryset.filter(challenge__pk=self.kwargs.get('pk'))
