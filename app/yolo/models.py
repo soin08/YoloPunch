@@ -27,7 +27,7 @@ class Challenge(models.Model):
     title = models.CharField(max_length=100)#
     description = models.CharField(max_length=500)
     author = models.ForeignKey(User, related_name='challenges')
-    recipients = models.ManyToManyField(UserProfile)
+    recipients = models.ManyToManyField(User)
     pub_date = models.DateTimeField(auto_now_add=True)
     exp_date = models.DateTimeField()
 
