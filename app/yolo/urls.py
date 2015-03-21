@@ -1,23 +1,10 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 
-from .api import UserViewSet, ChallengeViewSet, UserChallengeViewSet
-
-from rest_framework.routers import DefaultRouter
-
 from . import views
-
-router = DefaultRouter()
-router.register(r'users', UserViewSet)
-router.register(r'punches', ChallengeViewSet)
-router.register(r'userchallenge', UserChallengeViewSet,
-                      base_name='userchallenge')
 
 
 urlpatterns = patterns('',
-    #REST API
-    url(r'^api/', include(router.urls)),
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     #url(r'^users', include(user_urls)),
     #url(r'^punches', include(challenge_urls)),
     #url(r'^photos', include(photo_urls)),
