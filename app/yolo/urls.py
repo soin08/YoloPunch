@@ -10,6 +10,7 @@ urlpatterns = patterns('',
     #url(r'^photos', include(photo_urls)),
     #Basic YoloPunch functionality
     url(r'^$', views.home, name='home'),
+    url(r'^demo/$', views.demo, name='demo'),
     url(r'^search/$', views.search, name='search'),
     url(r'^top/$', views.top_all, name='top_all' ),
     url(r'^top/users/$', views.top_users, name='top_users'),

@@ -8,7 +8,7 @@ from django.db.models.signals import post_save
 class UserProfile(models.Model):
     user = models.OneToOneField(User, unique=True)
     points = models.IntegerField(default=5) #let's give 5 points for registration!
-    followers = models.ManyToManyField('self', symmetrical=False)
+    follows = models.ManyToManyField('self', symmetrical=False, related_name='followers')
     twitter = models.URLField(blank=True)
     facebook = models.URLField(blank=True)
 

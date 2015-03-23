@@ -15,6 +15,10 @@ def home(request):
     else:
         return render(request, 'yolo/index.html')
 
+def demo(request):
+    form = forms.RegisterForm()
+    return render(request, 'yolo/demo.html', {'form': form})
+
 def top_users(request):
     return render(request, 'yolo/top.html', {'action_name': 'users'})
 
