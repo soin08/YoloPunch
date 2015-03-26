@@ -26,6 +26,18 @@ class IsSelf(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         return obj == request.user
 
+class IsPOST(permissions.BasePermission):
+    """
+    Only allow POST method. Useful for registration.
+    """
+    def has_permission(self, request, view):
+        #print("method: %s" % request.method)
+        return request.method == "POST"
+
+    def has_object_permission(self, request, view, obj):
+        #print("method: %s" % request.method)
+        return request.method == "POST"
+
 
 
 

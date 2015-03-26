@@ -13,13 +13,18 @@ from .serializers import UserSerializer, UserProfileTrickySerializer, UserUpdate
 
 from yolo.models import Challenge, Photo, UserProfile
 
-from .permissions import IsAuthor, IsSelf, IsReadOnly
+from .permissions import IsAuthor, IsSelf, IsReadOnly, IsPOST
 
 
 class UserViewSet(viewsets.ModelViewSet):
     lookup_field = 'username'
     queryset = User.objects.all()
-    permission_classes = (IsAuthenticated, Or(IsSelf, IsReadOnly), )
+    #permission_classes = [Or(IsPOST, And(IsAuthenticated, Or(IsSelf, IsReadOnly))), ]
+    """
+    During development GET is allowed to everyone to make things easier to test.
+    However, in production only POST shoud be public.
+    """
+    permission_classes = (Or(IsSelf, IsReadOnly), )
 
     def get_serializer_class(self):
         if self.request.method in ("PUT", "PATCH"):
