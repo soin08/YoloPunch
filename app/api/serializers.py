@@ -139,6 +139,7 @@ class ChallengeSerializer(serializers.ModelSerializer):
 
 """
 
+
 class PhotoSerializer(serializers.HyperlinkedModelSerializer):
     image = serializers.ReadOnlyField(source='image.url')
 

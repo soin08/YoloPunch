@@ -1,24 +1,31 @@
 from rest_framework import permissions
 
+class IsReadOnly(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return  request.method in permissions.SAFE_METHODS
 
-class IsAuthorOrReadOnly(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        return  request.method in permissions.SAFE_METHODS
+
+
+
+class IsAuthor(permissions.BasePermission):
     """
-    Only allow owners of an object to edit it.
+    Only allow the owner of an object to edit it.
     """
     def has_object_permission(self, request, view, obj):
-        if  request.method in permissions.SAFE_METHODS:
-            return True
-
         return obj.author == request.user
 
 
-class IsSelfOrReadOnly(permissions.BasePermission):
+class IsSelf(permissions.BasePermission):
     """
-    Only allow current user to edit their profile.
+    Only currently logged in user can:
+    - edit their profile
+    - follow and unfollow new people
     """
     def has_object_permission(self, request, view, obj):
-        if request.method in permissions.SAFE_METHODS:
-            return True
-
         return obj == request.user
+
+
+
 
