@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, get_list_or_404
 
-from rest_framework import viewsets, status
+from rest_framework import viewsets, mixins, status
 from rest_framework.decorators import list_route, detail_route
 from rest_framework.response import Response
 from rest_framework.serializers import ValidationError
@@ -50,6 +50,7 @@ class FollowsViewSet(viewsets.ViewSet):
         self.check_object_permissions(request, obj=user)
         follows_profiles = user.profile.follows
         serializer = UserProfileTrickySerializer(follows_profiles, many=True)
+        #serializer.is_valid()
         return Response(serializer.data)
 
     def create(self, request, user_username):
@@ -101,9 +102,9 @@ class ChallengeViewSet(viewsets.ModelViewSet):
     queryset = Challenge.objects.all()
     serializer_class = ChallengeSerializer
     permission_classes = (IsAuthenticated, Or(IsAuthor, IsReadOnly),  )
-    #def get_queryset(self):
-        #user = self.request.user
-        #return Challenge.objects.filter(author=user)
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
 
 
 

@@ -1,6 +1,8 @@
 from django.contrib.auth.models import User
 from django.contrib.auth import update_session_auth_hash
-from django.utils.six import BytesIO
+from django.utils import timezone
+
+from datetime import timedelta
 
 from rest_framework.parsers import JSONParser
 from rest_framework.validators import UniqueValidator
@@ -11,6 +13,7 @@ from yolo.models import Challenge, Photo, UserProfile
 
 class UserProfileSerializer(serializers.ModelSerializer):
     """
+    Represents user profile.
     Points are updated automatically on events.
     Letting them being updated through the API is insecure.
     """
@@ -19,11 +22,13 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields = ('points', 'twitter', 'facebook', )
         read_only_fields = ('points', )
 
-"""
-When creating a new user, we need to make sure that he provides
-at least username, first name, last name, email and password.
-"""
+
 class UserSerializer(serializers.ModelSerializer):
+    """
+    Represents user.
+    When creating a new user, we need to make sure that he provides
+    at least username, first name, last name, email and password.
+    """
     username = serializers.CharField(
                                      min_length=3,
                                      max_length=30,
@@ -45,13 +50,13 @@ class UserSerializer(serializers.ModelSerializer):
         #the profile property will be created automatically using signals
         return User.objects.create(**validated_data)
 
-"""
-However, when we update a user, none of the fields is required, but
-none of them can be blank.
-"""
+
 class UserUpdateSerializer(UserSerializer):
+    """
+    When we update a user, none of the fields is required, but
+    none of them can be blank.
+    """
     username = serializers.CharField(
-                                     #read_only=True,
                                      required=False,
                                      min_length=3,
                                      max_length=30,
@@ -63,7 +68,6 @@ class UserUpdateSerializer(UserSerializer):
     password = serializers.CharField(write_only=True, min_length=6, required=False)
 
     def update(self, instance, validated_data):
-
         profile_data = validated_data.pop('profile', None)
 
         if profile_data:
@@ -86,8 +90,6 @@ class UserUpdateSerializer(UserSerializer):
 
         return instance
 
-class UserTrickySerializer(serializers.ModelSerializer):
-    pass
 
 class UserProfileTrickySerializer(serializers.ModelSerializer):
     user = UserSerializer()
@@ -99,38 +101,51 @@ class UserProfileTrickySerializer(serializers.ModelSerializer):
 
 
 class ChallengeSerializer(serializers.ModelSerializer):
-
+    """
+    Represents challenge
     """
     author = serializers.SlugRelatedField(
-                            #author will be set automatically to the current user
-                            slug_field='username',
-                            required=False,
-                            read_only=True,
+                                slug_field="username",
+                                read_only=True,
                     )
-    """
-    author = serializers.HyperlinkedRelatedField(
-                            read_only=True,
-                            #queryset=User.objects.all,
-                            view_name='user-detail',
-                            lookup_field='username'
-                        )
-    recipients = serializers.HyperlinkedRelatedField(
-                            view_name='user-detail',
-                            many=True,
-                            #read_only=True,
-                            lookup_field='username',
-                            queryset=User.objects.all(),
-                        )
-    #recipients_write =
+
+    recipients = serializers.SlugRelatedField(
+                              slug_field="username",
+                              many=True,
+                              queryset=User.objects.all()
+                    )
+
+
+    def validate_exp_date(self, value):
+        """
+        Make sure that exp_date is later then the current date by at least 5 minutes.
+        pub_date is added automatically.
+        """
+        now = timezone.now()
+        if now + timedelta(minutes=5) > value:
+            raise serializers.ValidationError("minimum time interval between now and exp_date must be 5 minutes.")
+
+        return value
+
+    def validate_recipients(self, value):
+        """
+        Make sure that request.user is not in recipients
+        """
+        request = self.context.get("request")
+        if request.user in value:
+            raise serializers.ValidationError("author cannot be included to recipients")
+
+        return value
+
 
     class Meta:
         model = Challenge
-        read_only_fields = ('pub_date', 'author', )
+        read_only_fields = ('pub_date', )
+
+
+
 
 """
-   def create(self, validated_data):
-        pass
-
     def update(self, instance, validated_data):
         instance.title = validated_data.get('title', instance.first_name)
         instance.description = validated_data.get('description', instance.description)

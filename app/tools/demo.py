@@ -8,6 +8,6 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "yolopunch.settings")
 import django
 django.setup()
 
-from yolo.urls import router
+from api.urls import users_router
 
-pprint.pprint(router.urls)
+pprint.pprint(users_router.urls)
