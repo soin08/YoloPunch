@@ -91,68 +91,74 @@ class UserUpdateSerializer(UserSerializer):
         return instance
 
 
-class UserProfileTrickySerializer(serializers.ModelSerializer):
-    user = UserSerializer()
-
-    class Meta:
-        model=UserProfile
-        fields = ('user', )
-
+class UserProfileTrickySerializer(serializers.BaseSerializer):
+    """
+    Serialize foregin key User object.
+    Visually indifferent from UserSerializer.
+    """
+    def to_representation(self, obj):
+        return UserSerializer(obj.user).data
 
 
 class ChallengeSerializer(serializers.ModelSerializer):
     """
     Represents challenge
     """
+    """
+    author is set automatically to request.user
+    """
     author = serializers.SlugRelatedField(
                                 slug_field="username",
                                 read_only=True,
                     )
 
+    """
+    Only followers can be in recipients
+    """
     recipients = serializers.SlugRelatedField(
                               slug_field="username",
                               many=True,
                               queryset=User.objects.all()
                     )
 
-
     def validate_exp_date(self, value):
         """
         Make sure that exp_date is later then the current date by at least 5 minutes.
         pub_date is added automatically.
         """
+        exp_date = value
         now = timezone.now()
-        if now + timedelta(minutes=5) > value:
-            raise serializers.ValidationError("minimum time interval between now and exp_date must be 5 minutes.")
+        if now + timedelta(minutes=5) > exp_date:
+            raise serializers.ValidationError("Minimum time interval between now and exp_date must be 5 minutes.")
 
         return value
 
     def validate_recipients(self, value):
-        """
-        Make sure that request.user is not in recipients
-        """
+        recipients = value
         request = self.context.get("request")
-        if request.user in value:
-            raise serializers.ValidationError("author cannot be included to recipients")
+        author = request.user
+        """
+        Make sure that recipients is not empty
+        """
+        if not recipients:
+             raise serializers.ValidationError("This field cannot be blank.")
+        """
+        Make sure that author is not in recipients
+        """
+        if author in recipients:
+            raise serializers.ValidationError("Author cannot be included to recipients.")
+        """
+        Make sure that all recipients follow the author
+        """
+        for recipient in recipients:
+            if recipient not in author.profile.followers.all():
+                raise serializers.ValidationError("All recipients must follow the author.")
 
         return value
-
 
     class Meta:
         model = Challenge
         read_only_fields = ('pub_date', )
-
-
-
-
-"""
-    def update(self, instance, validated_data):
-        instance.title = validated_data.get('title', instance.first_name)
-        instance.description = validated_data.get('description', instance.description)
-        recipients_data = validated_data.get('recipients', None)
-        if recipients_data:
-
-"""
 
 
 class PhotoSerializer(serializers.HyperlinkedModelSerializer):
