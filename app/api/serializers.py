@@ -100,6 +100,13 @@ class UserProfileTrickySerializer(serializers.BaseSerializer):
         return UserSerializer(obj.user).data
 
 
+class PhotoSerializer(serializers.HyperlinkedModelSerializer):
+    image = serializers.ImageField()
+
+    class Meta:
+        model = Photo
+
+
 class ChallengeSerializer(serializers.ModelSerializer):
     """
     Represents challenge
@@ -120,6 +127,8 @@ class ChallengeSerializer(serializers.ModelSerializer):
                               many=True,
                               queryset=User.objects.all()
                     )
+
+    photos = PhotoSerializer(many=True)
 
     def validate_exp_date(self, value):
         """
@@ -161,11 +170,6 @@ class ChallengeSerializer(serializers.ModelSerializer):
         read_only_fields = ('pub_date', )
 
 
-class PhotoSerializer(serializers.HyperlinkedModelSerializer):
-    image = serializers.ReadOnlyField(source='image.url')
-
-class Meta:
-    model = Photo
 
 
 
