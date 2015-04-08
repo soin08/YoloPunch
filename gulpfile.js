@@ -80,10 +80,17 @@ gulp.task('coffeelint', function() {
 // Optimize Images
 gulp.task('images', function () {
   return gulp.src('app/static/images/**/*')
-    .pipe($.cache($.imagemin({
+    /*.pipe($.cache($.imagemin({
       progressive: true,
       interlaced: true
-    })))
+    })))*/
+    //Problems with caching.
+    //We only use this task during building,
+    //so caching is not very useful anyway.
+    .pipe($.imagemin({
+        progressive: true,
+        interlaced: true
+    }))
     .pipe(gulp.dest('dist/static/images'))
     .pipe($.size({title: 'images'}));
 });
