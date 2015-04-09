@@ -6,9 +6,22 @@
 
 {% block content %}
     <h1>Ready for challanges?</h1>
-    <form action="{% url 'registration_register' %}" method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Submit</button>
+
+    <form action="{% url 'api:user-list' %}" method="POST" novalidate>
+
+        <label for="first_name">Your First Name:</label>
+        <input type="text" name="first_name" id="first_name" placeholder="your first name por favor" required><br>
+
+        <label for="last_name">Your Last Name:</label>
+        <input type="text" name="last_name" id="last_name" placeholder="your last name por favor" required><br>
+
+        <label for="username">Your username:</label>
+        <input type="text" name="username" id="username" placeholder="username" required><br>
+
+        <label for="password">Your password:</label>
+        <input type="password" name="password" id="password" placeholder="password" required><br>
+
+        <button type="submit">Rock out!</button>
+
     </form>
 {% endblock content %}

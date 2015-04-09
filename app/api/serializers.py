@@ -44,7 +44,6 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ('username', 'first_name', 'last_name',
                        'email', 'password', 'profile')
-        #read_only_fields = ('username', )
 
     def create(self, validated_data):
         #the profile property will be created automatically using signals
