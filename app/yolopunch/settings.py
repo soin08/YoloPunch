@@ -17,7 +17,6 @@ YOLO_ROOT = os.path.abspath(os.path.join(BASE_DIR, os.pardir))
 #print(os.path.join(YOLO_ROOT, ".tmp"))
 #print(os.path.abspath(os.path.dirname(os.path.dirname(BASE_DIR))))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
 
@@ -123,4 +122,3 @@ STATICFILES_DIRS = (
 
 MEDIA_ROOT =  os.path.join(BASE_DIR, "media")
 MEDIA_URL = '/media/'
-
