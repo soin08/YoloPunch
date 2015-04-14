@@ -4,24 +4,61 @@
     Register
 {% endblock title %}
 
+{% block ng-app %}Auth{% endblock %}
+
 {% block content %}
-    <h1>Ready for challanges?</h1>
 
-    <form action="{% url 'api:user-list' %}" method="POST" novalidate>
+<div id="form-main" ng-controller="RegisterController as regCtrl">
+<h1>Ready for challenges?</h1>
+<h2>Sign up!</h2>
+<div class="row">
+  <form class="col s12 m6" action="{% url 'api:user-list' %}" method="POST" novalidate>
+  {% verbatim %}
+    <div class="row">
+      <div class="input-field col s12 m6">
+        <input id="first_name" type="text" class="validate">
+        <label for="first_name">First Name</label>
+      </div>
+      <div class="input-field col s12 m6">
+        <input id="last_name" type="text" class="validate">
+        <label for="last_name">Last Name</label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s12">
+        <input id="username" type="text" class="validate">
+        <label for="username">Username</label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s12">
+        <input id="password" type="password" class="validate">
+        <label for="password">Password</label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s12">
+        <input id="email" type="email" class="validate">
+        <label for="email">Email</label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col s12">
+        <input type="checkbox" class="filled-in" id="terms_and_conditions">
+        <label for="terms_and_conditions">
+          I agree to <a href="#">Terms and Conditions</a>
+        </label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col s12">
+        <button class="btn waves-effect waves-light" type="submit" name="action">Submit
+          <i class="mdi-content-send right"></i>
+        </button>
+      </div>
+    </div>
+    {% endverbatim %}
+  </form>
+</div>
 
-        <label for="first_name">Your First Name:</label>
-        <input type="text" name="first_name" id="first_name" placeholder="your first name por favor" required><br>
-
-        <label for="last_name">Your Last Name:</label>
-        <input type="text" name="last_name" id="last_name" placeholder="your last name por favor" required><br>
-
-        <label for="username">Your username:</label>
-        <input type="text" name="username" id="username" placeholder="username" required><br>
-
-        <label for="password">Your password:</label>
-        <input type="password" name="password" id="password" placeholder="password" required><br>
-
-        <button type="submit">Rock out!</button>
-
-    </form>
 {% endblock content %}

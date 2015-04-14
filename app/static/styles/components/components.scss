@@ -4,7 +4,7 @@
 *
 **/
 
-@import '_utils';
+/*@import '_utils';
 @import '_normalize';
 @import '_global';
 
@@ -13,6 +13,9 @@
 
 // Color Palette
 @import '_palette';
+
+// Variables
+@import '_variables';
 
 // Modules
 @import '_modules/_highlight';
@@ -47,6 +50,7 @@
 
 @import '_components/_yolo-footer';
 @import '_components/_yolo-demo';
+@import '_components/_yolo-register-form';
 
 // Themed styles
 @import '_themed';
@@ -57,3 +61,7 @@
 
 // Make sure this is last to override anything else :)
 @import '_helper';
+*/
+@import '_pages/_page-index.scss';
+@import '_variables';
+@import '_typography';

@@ -1,0 +1,17 @@
+/*$h1-fontsize: 4.2rem !default;
+
+html {
+
+  @media only screen and (min-width: 0) {
+    h1 { font-size: $h1-fontsize - 2*0.64; }
+  }
+
+  @media only screen and (min-width: $medium-screen) {
+    h1 { font-size: $h1-fontsize - 1*0.64; }
+  }
+
+  @media only screen and (min-width: $large-screen) {
+    font-size: 15px;
+  }
+
+}*/

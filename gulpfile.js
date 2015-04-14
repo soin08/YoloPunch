@@ -119,20 +119,21 @@ gulp.task('copy', function () {
 // Compile and Automatically Prefix Stylesheets
 gulp.task('styles', function () {
   // For best performance, don't add Sass partials to `gulp.src`
+  // If we edited a partial, we need to also edit a file that partial
+  // is included at, otherwise $.changed() won't recognize the change.
     return gulp.src([
       'app/static/styles/*.scss',
       'app/static/styles/components/components.scss',
       'app/static/styles/materialize/sass/materialize.scss',
       'app/static/styles/**/*.css'
-      //'app/static/styles/components/components.scss'
     ])
     .pipe($.sourcemaps.init())
-    .pipe($.changed('.tmp/styles', {extension: '.css'}))
+    //.pipe($.changed('.tmp/styles', {extension: '.css'}))
     .pipe($.sass({
       precision: 10,
       onError: logSASSError
     }))
-    .pipe($.concat('main.css'))
+    //.pipe($.concat('main.css'))
     .pipe($.autoprefixer({browsers: AUTOPREFIXER_BROWSERS}))
     .pipe($.sourcemaps.write())
     .pipe(gulp.dest('.tmp/styles'))
@@ -149,7 +150,8 @@ gulp.task('styles', function () {
         //    /.app-bar.open/
         //  ]
         //}))
-    .pipe($.if(isBuild, $.rename({suffix: '.min'})))
+    .pipe($.if(isBuild, $.concat('main.min.css')))
+    //.pipe($.if(isBuild, $.rename({suffix: '.min'})))
     .pipe($.if(isBuild, gulp.dest('dist/static/styles')))
     .pipe($.if(isBuild, $.size({title: 'styles-dist'})));
 });
@@ -209,15 +211,20 @@ gulp.task('bower-inject', function () {
     .pipe(gulp.dest('app/templates'));
 });
 
-gulp.task('bower-pack', function(){
-  return gulp.src(bowerFiles({filter:'/**/*.{js,css}'}))
-  .pipe($.if('*.js', $.concat('lib.min.js')))
-  .pipe($.if('*.js', $.uglify()))
-  .pipe($.if('*.css', $.concat('lib.min.css')))
-  .pipe($.if('*.css', $.csso()))
-  .pipe($.if('*.js', gulp.dest('dist/static/scripts')))
-  .pipe($.if('*.css', gulp.dest('dist/static/styles')))
-  .pipe($.size({title: 'bower lib'}));
+gulp.task('bower-pack-css', function(){
+  return gulp.src(bowerFiles({filter:'/**/*.css'}))
+  .pipe($.concat('lib.min.css'))
+  .pipe($.csso())
+  .pipe(gulp.dest('dist/static/styles'))
+  .pipe($.size({title: 'bower-pack-css'}));
+});
+
+gulp.task('bower-pack-js', function(){
+  return gulp.src(bowerFiles({filter:'/**/*.js'}))
+  .pipe($.concat('lib.min.js'))
+  .pipe($.uglify())
+  .pipe(gulp.dest('dist/static/scripts'))
+  .pipe($.size({title: 'bower-pack-js'}));
 });
 
 
@@ -301,7 +308,7 @@ gulp.task('serve:dist', ['build', 'runserver:dist'], function () {
 // Build Production Files
 gulp.task('build', ['clean'], function (cb) {
   isBuild = true;
-  runSequence('styles', ['bower-inject', 'bower-pack', 'jshint', 'coffeelint', 'scripts',
+  runSequence('styles', ['bower-inject', 'bower-pack-css', 'bower-pack-js', 'jshint', 'coffeelint', 'scripts',
     'html', 'images', 'copy'], cb);
 });
 
