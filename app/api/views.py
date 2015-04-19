@@ -1,34 +1,44 @@
+from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
-from django.shortcuts import get_object_or_404, get_list_or_404
+from django.contrib.auth.forms import AuthenticationForm
+from django.shortcuts import get_object_or_404, get_list_or_404, resolve_url
+from django.http import HttpResponseRedirect, Http404
 
-from rest_framework import viewsets, mixins, status
+from rest_framework import viewsets, mixins, status, generics
+#from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import list_route, detail_route
 from rest_framework.response import Response
 from rest_framework.serializers import ValidationError
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer, BrowsableAPIRenderer
 
 from rest_condition import And, Or
 
 from .serializers import UserSerializer, UserProfileTrickySerializer, UserUpdateSerializer, ChallengeSerializer, PhotoSerializer
 
+from yolopunch import settings
 from yolo.models import Challenge, Photo, UserProfile
 
 from .permissions import IsAuthor, IsSelf, IsReadOnly, IsPOST
 
 
-class UserViewSet(viewsets.ModelViewSet):
+class UserViewSet(mixins.RetrieveModelMixin,
+                  mixins.UpdateModelMixin,
+                  mixins.DestroyModelMixin,
+                  viewsets.GenericViewSet):
     lookup_field = 'username'
     queryset = User.objects.all()
-    #permission_classes = [Or(IsPOST, And(IsAuthenticated, Or(IsSelf, IsReadOnly))), ]
     """
-    During development GET is allowed to everyone to make things easier to test.
-    However, in production only POST shoud be public.
+    List view is forbidden.
+    GET only for logged in users. (for everybody during development)
+    POST, PATCH, DELETE - only for self.
     """
     permission_classes = (Or(IsSelf, IsReadOnly), )
 
     def get_serializer_class(self):
         if self.request.method in ("PUT", "PATCH"):
-            #fields are not required but not blank
+            #fields are not required or not blank
             return UserUpdateSerializer
         else:
             #fields are required
@@ -37,10 +47,10 @@ class UserViewSet(viewsets.ModelViewSet):
 
 class FollowsViewSet(viewsets.ViewSet):
     """
-    Shows list of users that requested user follows.
-    Only currently logged-in user can edit this list.
+    Shows list of users that this user follows.
+    Only currently logged-in user can edit his list.
     """
-    permission_classes = (IsAuthenticated, Or(IsSelf, IsReadOnly), )
+    permission_classes = (Or(IsSelf, IsReadOnly), )
 
     def list(self, request, user_username=None):
         """
@@ -84,7 +94,7 @@ class FollowerViewSet(viewsets.ViewSet):
     """
     Shows read-only list of users who follow requested user.
     """
-    permission_classes = (IsAuthenticated, Or(IsSelf, IsReadOnly), )
+    permission_classes = (IsReadOnly, )
 
     def list(self, request, user_username=None):
         """
@@ -132,4 +142,30 @@ class ChallengePhotoViewSet(viewsets.ModelViewSet):
         return queryset.filter(challenge__pk=self.kwargs.get('pk'))
 
 
-# Create your views here.
+class LoginView(APIView):
+    renderer_classes = (TemplateHTMLRenderer, BrowsableAPIRenderer, JSONRenderer)
+
+    def get(self, request, format="html"):
+        if format == 'html':
+            login_form = AuthenticationForm()
+            return Response({'form':login_form},
+                            template_name = 'registration/login.html')
+        #for GET we only allow html renderer
+        raise Http404()
+
+    """
+    Performs default auth behaviour
+    """
+    def post(self, request, format="html"):
+        redirect_to = resolve_url(settings.LOGIN_REDIRECT_URL)
+        login_form = AuthenticationForm(request, data=request.data)
+        if login_form.is_valid():
+            login(request, login_form.get_user())
+            return HttpResponseRedirect(redirect_to)
+        else:
+            if format == 'html':
+                return Response({'form':login_form},
+                                template_name = 'registration/login.html')
+
+            else:
+                raise ValidationError(login_form.errors.as_json())

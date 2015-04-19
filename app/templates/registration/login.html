@@ -4,29 +4,39 @@
     Login to YoloPunch
 {% endblock title %}
 
+{% block ng-app %}Auth{% endblock %}
+
 {% block content %}
-  <h1>Welcome back!</h1>
   {{ form.non_field_errors }}
   <div class="row">
-    <form class="col s12 m6" action="{% url 'auth_login' %}" method="POST" >
-      {% csrf_token %}
-      <div class="row">
-        <div class="input-field col s12">
-          <input id="id_username" type="text" name="username" value="{{ form.username.value }}">
-          <label for="id_username">Username</label>
+    <form class="col s12 m6 card" action="{% url 'login' %}" method="POST" >
+      <div class="card-content">
+        <div class="card-title black-text">
+          <h4>Sign in</h4>
         </div>
-      </div>
-      <div class="row">
-        <div class="input-field col s12">
-          <input id="id_password" type="password" name="password">
-          <label for="password">Password</label>
+        {% csrf_token %}
+        <div class="row">
+          <div input-field class="col s12">
+            <input id="id_username" type="text" name="username"
+              value="{{ form.username.value |default_if_none:"" }}">
+            <label for="id_username">Username</label>
+          </div>
+          {{ form.username.errors }}
         </div>
-      </div>
-      <div class="row">
-        <div class="col s12">
-          <button class="btn waves-effect waves-light" type="submit" name="action">Log in
-            <i class="mdi-content-send right"></i>
-          </button>
+        <div class="row">
+          <div input-field class="col s12">
+            <input id="id_password" type="password" name="password">
+            <label for="password">Password</label>
+          </div>
+          {{ form.password.errors }}
+        </div>
+        <div class="row">
+          <div class="col s12">
+            <button class="btn waves-effect waves-light" type="submit" name="action">
+              Sign in
+              <i class="mdi-content-send right"></i>
+            </button>
+          </div>
         </div>
       </div>
     </form>
