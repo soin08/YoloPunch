@@ -7,7 +7,6 @@
 {% block ng-app %}Auth{% endblock %}
 
 {% block content %}
-  {{ form.non_field_errors }}
   <div class="row">
     <form class="col s12 m6 card" action="{% url 'login' %}" method="POST" >
       <div class="card-content">
@@ -15,20 +14,38 @@
           <h4>Sign in</h4>
         </div>
         {% csrf_token %}
+        {% if form.non_field_errors %}
+              <div class="alert error">
+                <i class="small mdi-alert-error"></i>
+                {{ form.non_field_errors }}
+              </div>
+        {% endif %}
         <div class="row">
+          {% if form.username.errors %}
+            <div class="alert error clear">
+              <i class="tiny mdi-alert-error"></i>
+              {{ form.username.errors }}
+            </div>
+          {% endif %}
           <div input-field class="col s12">
             <input id="id_username" type="text" name="username"
-              value="{{ form.username.value |default_if_none:"" }}">
+              value="{{ form.username.value |default_if_none:"" }}"
+              class="{% if form.username.errors %}invalid{% endif %}">
             <label for="id_username">Username</label>
           </div>
-          {{ form.username.errors }}
         </div>
         <div class="row">
+          {% if form.password.errors %}
+            <div class="alert error">
+              <i class="tiny mdi-alert-error"></i>
+              {{ form.password.errors }}
+            </div>
+          {% endif %}
           <div input-field class="col s12">
-            <input id="id_password" type="password" name="password">
+            <input id="id_password" type="password" name="password"
+              class="{% if form.password.errors %}invalid{% endif %}">
             <label for="password">Password</label>
           </div>
-          {{ form.password.errors }}
         </div>
         <div class="row">
           <div class="col s12">
