@@ -46,3 +46,5 @@ HTML
 Rails
 tmp
 .tern-project
+*.sublime-project
+*.sublime-workspace

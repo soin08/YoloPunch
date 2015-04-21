@@ -1,9 +1,14 @@
-class UserFactory
-  constructor: ->
-    @userListUrl = 'api/v1/users/'
-
-  create: (user) ->
-    $http.post @userListUrl, user
-
 angular.module "Auth"
-  .factory "User", -> new UserFactory()
+  .factory "User", ['$http', ($http) ->
+      new class UserFactory
+          constructor: ()->
+            @loginUrl = '/accounts/login/.json'
+
+          login: (username, password) ->
+            credentials =
+                username: username
+                password: password
+
+            console.log "logging in with credentials: username: #{credentials.username}, password: #{credentials.password}"
+            $http.post @loginUrl, credentials
+  ]

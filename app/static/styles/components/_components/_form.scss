@@ -1,0 +1,7 @@
+input.ng-dirty.ng-invalid {
+  @extend input[type=text].invalid;
+}
+
+input.ng-dirty.ng-valid {
+  @extend input[type=text].valid;
+}

@@ -308,13 +308,13 @@ gulp.task('serve:dist', ['build', 'runserver:dist'], function () {
 // Build Production Files
 gulp.task('build', ['clean'], function (cb) {
   isBuild = true;
-  runSequence('styles', ['bower-inject', 'bower-pack-css', 'bower-pack-js', 'jshint', 'coffeelint', 'scripts',
+  runSequence('styles', ['bower-pack-css', 'bower-pack-js', 'jshint', 'coffeelint', 'scripts',
     'html', 'images', 'copy'], cb);
 });
 
 
 // Watch Files For Changes & Reload, the default task
-gulp.task('default', ['bower-inject', 'styles', 'jshint', 'coffeelint', 'scripts',
+gulp.task('default', ['styles', 'jshint', 'coffeelint', 'scripts',
   'runserver'], function () {
   browserSync({
     notify: false,
@@ -326,7 +326,7 @@ gulp.task('default', ['bower-inject', 'styles', 'jshint', 'coffeelint', 'scripts
   gulp.watch(['app/static/scripts/**/*.js'], ['jshint']);
   gulp.watch(['app/static/scripts/**/*.coffee'], ['coffeelint']);
   gulp.watch(['app/static/scripts/**/*.{js,coffee}'], ['scripts', reload]);
-  gulp.watch(['app/static/bower_components/**/*.{css,js}'], ['bower-inject', reload]);
+  gulp.watch(['app/static/bower_components/**/*.{css,js}'], reload);
   gulp.watch(['app/static/images/**/*'], reload);
 });
 
