@@ -33,7 +33,7 @@ Thumbs.db
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
-*/__pycache__/
+/**/__pycache__/
 *.py[cod]
 
 #Specifics #
@@ -48,3 +48,4 @@ tmp
 .tern-project
 *.sublime-project
 *.sublime-workspace
+/**/settings_local.py
